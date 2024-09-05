@@ -41,8 +41,41 @@ class Juego:
         self.nombres = ['UAIBOT', 'BOTA', 'UAIBOTINO', 'UAIBOTINA']
         self.velocidades = [7, 7, 10.15, 10.15]#10.15 es el 45% mas que 7
         self.num_robot = [1, 2, 3, 4]
+        # Variables para contar las bolsas recogidas y depositadas
+        self.contador_bolsas_v = 0
+        self.contador_bolsas_g = 0
+        self.bolsas_v_depositadas = 0
+        self.bolsas_g_depositadas = 0
+        self.total_bolsas = 0
         # Inicializar el juego
         self.inicializar_datos()
+
+    def inicializar_objetos(self, zonas_seguras):
+    
+        # Inicializar listas para bolsas verdes y negras
+        bolsas_verdes = []
+        bolsas_grises = []
+
+        # Generar al menos 4 bolsas verdes y 4 bolsas grises
+        for _ in range(4):
+            posBolsaVerde = self.generar_posicion_aleatoria(zonas_seguras)
+            bolsas_verdes.append(self.Bolsa("img/assets/BolsaVerde.png", posBolsaVerde, "verde", self.pantalla))
+            
+            posBolsaGris = self.generar_posicion_aleatoria(zonas_seguras)
+            bolsas_grises.append(self.Bolsa("img/assets/BolsaGrisOscuro.png", posBolsaGris, "gris", self.pantalla))
+
+        # Generar las bolsas restantes (pueden ser verdes o grises)
+        for _ in range(2):
+            if random.choice([True, False]):
+                posBolsaVerde = self.generar_posicion_aleatoria(zonas_seguras)
+                bolsas_verdes.append(self.Bolsa("img/assets/BolsaVerde.png", posBolsaVerde, "verde", self.pantalla))
+            else:
+                posBolsaGris = self.generar_posicion_aleatoria(zonas_seguras)
+                bolsas_grises.append(self.Bolsa("img/assets/BolsaGrisOscuro.png", posBolsaGris, "gris", self.pantalla))
+
+        # Extender la lista de bolsas con las generadas
+        self.bolsas.extend(bolsas_verdes + bolsas_grises)
+        
     #___________________CLASE JUGADOR___________________
     class Jugador(pygame.sprite.Sprite):
         def __init__(self, imagen, nombre, posicion_inicial, rapidez, num_personaje, pantalla, ):
@@ -137,12 +170,7 @@ class Juego:
         pygame.Rect(169, 190, 130, 700),  # Zona segura 4
         pygame.Rect(450, 196, 295, 184)   # Zona segura 5
         ]
-        # Posiciones random
-        posBolsaGris1 = self.generar_posicion_aleatoria(zonas_seguras)
-        posBolsaGris2 = self.generar_posicion_aleatoria(zonas_seguras)
-        posBolsaGris3 = self.generar_posicion_aleatoria(zonas_seguras)
-        posBolsaVerde1 = self.generar_posicion_aleatoria(zonas_seguras)
-        posBolsaVerde2 = self.generar_posicion_aleatoria(zonas_seguras)
+     
         self.pos_bot = (100,90)
         self.casas = [
                 self.Colisiones(0, 0, 550, 85), #colision arriba
@@ -157,21 +185,18 @@ class Juego:
         self.jugador = self.Jugador("img/assets/UAIBOT.png", self.nombre_personaje, self.pos_bot, self.velocidades[0], self.num_robot[0], self.pantalla)
         self.cesto_verde = self.Cesto("img/assets/cestoverder.jpeg", (1000, 85), self.pantalla)
         self.cesto_negro = self.Cesto("img/assets/cestogriss.png", (1000, 500), self.pantalla)
-        bolsa_verde_1 = self.Bolsa("img/assets/BolsaVerde.png", posBolsaVerde1, "verde", self.pantalla)
-        bolsa_verde_2 = self.Bolsa("img/assets/BolsaVerde.png", posBolsaVerde2, "verde", self.pantalla)
-        bolsa_negra_1 = self.Bolsa("img/assets/BolsaGrisOscuro.png", posBolsaGris1, "gris", self.pantalla)
-        bolsa_negra_2 = self.Bolsa("img/assets/BolsaGrisOscuro.png", posBolsaGris2, "gris", self.pantalla)
-        bolsa_negra_3 = self.Bolsa("img/assets/BolsaGrisOscuro.png", posBolsaGris3, "gris", self.pantalla)
-
-        self.bolsas.extend([bolsa_verde_1, bolsa_verde_2, bolsa_negra_1, bolsa_negra_2, bolsa_negra_3])
         self.cestos.extend([self.cesto_verde, self.cesto_negro])
         
+        # Inicializar objetos del juego usando la función 'inicializar_objetos'
+        self.inicializar_objetos(zonas_seguras)
+        # Total de bolsas
+        self.total_bolsas = len(self.bolsas)
         self.contador_bolsas = 0
         self.contador_bolsas_v = 0
         self.contador_bolsas_g = 0
         self.bolsas_v_depositadas = 0
         self.bolsas_g_depositadas = 0
-        self.total_bolsas = len(self.bolsas)
+        
         self.cronometro.tiempo_inicio = 0  # Resetear tiempo de inicio
         self.cronometro.tiempo_total = 0
         self.cronometro.iniciar()
