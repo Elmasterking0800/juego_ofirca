@@ -27,7 +27,7 @@ class Juego:
         self.ancho_pantalla = 1150
         self.alto_pantalla = 640
         self.pantalla = pygame.display.set_mode((self.ancho_pantalla, self.alto_pantalla))
-        pygame.display.set_caption("OFIRCA 2024 - Ronda 1 - Inicio")
+        pygame.display.set_caption("OFIRCA 2024 - Ronda 2")
         self.reloj = pygame.time.Clock()
         self.juego_ejecutado = True
         self.juego_pausado = False
